@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import styles from '../app/css/RandomChar.module.css'
 
 interface RandomCharProps {
   char: string;
   width?: string;
-  refreshInterval?: number; // in milliseconds
+  refreshInterval?: number;
+  onStateChange: (number: number) => void;
 }
 
-const RandomChar: React.FC<RandomCharProps> = ({ char, width = '100%', refreshInterval = 500 }) => {
+const RandomChar: React.FC<RandomCharProps> = ({ char, width = '100%', refreshInterval = 5000, onStateChange }) => {
   const [randomPath, setRandomPath] = useState<string | null>(null);
   const [randomNumber, setRandomNumber] = useState<number | null>(null);
 
   const fetchSVG = useCallback(async () => {
     try {
-      const newRandomNumber = Math.floor(Math.random() * 8) + 1;
+      const newRandomNumber = Math.floor(Math.random() * 15) + 1;
       setRandomNumber(newRandomNumber);
+      onStateChange(newRandomNumber);
+      console.log(`RandomChar ${char}: New number ${newRandomNumber}`); // Debug log
       const response = await fetch(`/svg/${char}/${newRandomNumber}.svg`);
       if (!response.ok) {
         throw new Error(`Failed to fetch SVG: ${response.statusText}`);
@@ -25,23 +27,20 @@ const RandomChar: React.FC<RandomCharProps> = ({ char, width = '100%', refreshIn
     } catch (error) {
       console.error(error);
     }
-  }, [char]);
+  }, [char, onStateChange]);
 
   useEffect(() => {
-    fetchSVG(); // Initial fetch
-
+    fetchSVG();
     const intervalId = setInterval(fetchSVG, refreshInterval);
-
-    // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [fetchSVG, refreshInterval]);
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.debug}>Random Number: {randomNumber}</div>
-      <div className={styles.aspectRatioBox}>
+    <div className="w-full bg-slate-400 p-2 rounded" style={{ width }}>
+      <div className="text-xs text-white mb-1">Random Number: {randomNumber}</div>
+      <div className="relative w-full pt-[100%]">
         <svg
-          className={styles.svg}
+          className="absolute top-0 left-0 w-full h-full"
           viewBox="0 0 100 100"
           preserveAspectRatio="xMidYMid meet"
           dangerouslySetInnerHTML={{ __html: randomPath || '' }}
