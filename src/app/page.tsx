@@ -1,6 +1,9 @@
 'use client'
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import RandomChar from '@/components/randomChar'
+// import TitleC from '@/components/c'
+// import TitleH from '@/components/h'
 
 function App() {
   const account = useAccount()
@@ -9,7 +12,7 @@ function App() {
 
   return (
     <>
-      <div>
+      {/* <div>
         <h2>Account</h2>
 
         <div>
@@ -25,9 +28,9 @@ function App() {
             Disconnect
           </button>
         )}
-      </div>
+      </div> */}
 
-      <div>
+      {/* <div>
         <h2>Connect</h2>
         {connectors.map((connector) => (
           <button
@@ -40,7 +43,18 @@ function App() {
         ))}
         <div>{status}</div>
         <div>{error?.message}</div>
-      </div>
+      </div> */}
+        <div className='flex flex-col w-full'>
+        <h1>Random Character</h1>
+          <div className='flex flex-row justify-between items-center content-center'>
+
+            <RandomChar char="c" />
+            <RandomChar char="h" />
+            <RandomChar char="a" />
+            <RandomChar char="o" />
+            <RandomChar char="s" />
+          </div>
+        </div>
     </>
   )
 }
