@@ -2,6 +2,7 @@
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import Numbers from '@/components/Numbers'
+import { SaveButton } from '@/components/SaveButton'
 // import NetworkTest from '@/components/NetworkTest'
 
 export default function Home() {
@@ -10,10 +11,10 @@ export default function Home() {
   const { disconnect } = useDisconnect()
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen text-white">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Chaos Game</h1>
         <Numbers />
+        <SaveButton currentNumbers={[]} />
         <br />
         {/* <NetworkTest /> */}
         {account.isConnected ? (

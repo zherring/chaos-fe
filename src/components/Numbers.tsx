@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { baseSepolia } from 'wagmi/chains'
-import { useContractRead, useBlockNumber } from 'wagmi'
+import { useContractRead } from 'wagmi'
+import { useSavedNumbers } from '../app/context/SavedNumbersContext'
 
 const ABI = [
   {
@@ -26,6 +27,7 @@ const CONTRACT_ADDRESS = '0xc9b51757c31eFaE5ac46bd63Bb25db86386F55a0'
 export default function Numbers() {
   const [randomNumbers, setRandomNumbers] = useState<number[]>([])
   const [refreshKey, setRefreshKey] = useState(0)
+  const { savedSets, addSavedSet } = useSavedNumbers()  // Use the context here
 
   const { data: nextTokenId, refetch: refetchTokenId } = useContractRead({
     address: CONTRACT_ADDRESS,
@@ -59,16 +61,46 @@ export default function Numbers() {
     return () => clearInterval(timer)
   }, [refetchTokenId, refetchNumbers])
 
+  const handleSave = () => {
+    addSavedSet(randomNumbers)
+  }
+
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
-      <div className="text-white text-9xl font-bold flex space-x-4">
-        [
+    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
+      <div className="text-lg flex space-x-4 mb-8">
+        <span className='text-gray-600'>[</span>
         {randomNumbers.map((number, index) => (
-          <div key={index} className="flex items-center justify-center">
-            {number.toString()},
-          </div>
+          <span key={index}>
+            {number.toString()}
+            {index < randomNumbers.length - 1 && ','}
+          </span>
         ))}
-        ]
+        <span className='text-gray-600'>]</span>
+      </div>
+      
+      <button 
+        onClick={handleSave}
+        className="bg-white text-black px-4 py-2 rounded-md mb-8 hover:bg-gray-200 transition-colors"
+      >
+        Save Current Set
+      </button>
+
+      <div className="w-full max-w-2xl">
+        <h2 className="text-2xl font-bold mb-4">Saved Sets:</h2>
+        <div className="space-y-2">
+          {savedSets.map((set, index) => (
+            <div key={index} className="bg-gray-800 p-2 rounded-md">
+              [
+              {set.map((number, idx) => (
+                <span key={idx}>
+                  {number.toString()}
+                  {idx < set.length - 1 && ', '}
+                </span>
+              ))}
+              ]
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
